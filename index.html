@@ -333,7 +333,7 @@
     async function loadConversionMap() {
       try {
         showStatus('正在載入對照表...', false);
-        const response = await fetch('/gb2312-dict.json');
+        const response = await fetch('https://6ra1n0y.github.io/GBConv/gb2312-dict.json');
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
