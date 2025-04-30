@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GB亂碼還原工具</title>
+  <style>
+    
+    :root {
+      --primary-color: #3498db;
+      --secondary-color: #2980b9;
+      --success-color: #2ecc71;
+      --background-color: #f9f9f9;
+      --card-background: #ffffff;
+      --text-color: #333333;
+      --border-color: #e0e0e0;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .container {
+      background-color: var(--card-background);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+
+    .description {
+      color: #666;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 1rem;
+      resize: vertical;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
+      flex: 1;
+      max-width: 200px;
+    }
+
+    button:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .copy-btn {
+      background-color: var(--success-color);
+    }
+
+    .copy-btn:hover {
+      background-color: #27ae60;
+    }
+
+    .clear-btn {
+      background-color: #e74c3c;
+    }
+
+    .clear-btn:hover {
+      background-color: #c0392b;
+    }
+
+    .output-container {
+      position: relative;
+    }
+
+    .loading {
+      display: none;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .loading-spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top: 4px solid var(--primary-color);
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+    }
+
+    .status-message {
+      text-align: center;
+      padding: 10px;
+      border-radius: var(--radius);
+      margin-top: 10px;
+      display: none;
+    }
+
+    .success {
+      background-color: rgba(46, 204, 113, 0.2);
+      color: #27ae60;
+    }
+
+    .error {
+      background-color: rgba(231, 76, 60, 0.2);
+      color: #c0392b;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      color: #888;
+      font-size: 0.9rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      body {
+        padding: 12px;
+      }
+
+      .container {
+        padding: 16px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      button {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      textarea {
+        height: 100px;
+      }
+
+      .container {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>亂碼還原工具（GB2312 ➜ Big5）</h1>
+      <p class="description">將顯示為亂碼的 Big5 編碼文字還原成簡體中文</p>
+    </header>
+
+    <main>
+      <div class="form-group">
+        <label for="inputText">輸入亂碼文字：</label>
+        <textarea id="inputText" placeholder="例如：觴鎢蛌遙馱撿"></textarea>
+      </div>
+
+      <div class="button-group">
+        <button id="convertBtn" type="button">立即轉換</button>
+        <button id="clearBtn" type="button" class="clear-btn">清除內容</button>
+      </div>
+
+      <div class="loading" id="loadingSpinner">
+        <div class="loading-spinner"></div>
+      </div>
+
+      <div class="status-message" id="statusMessage"></div>
+
+      <div class="form-group output-container">
+        <label for="outputText">還原結果：</label>
+        <textarea id="outputText" readonly></textarea>
+        <div class="button-group">
+          <button id="copyBtn" type="button" class="copy-btn">複製結果</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <footer>
+    <p>© 2025 6ra1n0y．<a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GNU GPL-3.0 授權</a> | 將 Big5 編碼的亂碼轉換為正確的簡體中文</p>
+  </footer>
+
+  <script>
+    // DOM elements
+    const inputText = document.getElementById('inputText');
+    const outputText = document.getElementById('outputText');
+    const convertBtn = document.getElementById('convertBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const statusMessage = document.getElementById('statusMessage');
+
+    // Global variables
+    let big5ToGb2312Map = {};
+    let isMapLoaded = false;
+
+    // Show status message
+    function showStatus(message, isError = false) {
+      statusMessage.textContent = message;
+      statusMessage.className = 'status-message ' + (isError ? 'error' : 'success');
+      statusMessage.style.display = 'block';
+      
+      // Auto hide after 3 seconds
+      setTimeout(() => {
+        statusMessage.style.display = 'none';
+      }, 3000);
+    }
+
+    // Convert function
+    function convertText() {
+      if (!isMapLoaded) {
+        showStatus('正在載入對照表，請稍候...', false);
+        return;
+      }
+
+      const input = inputText.value;
+      if (!input.trim()) {
+        showStatus('請輸入需要轉換的文字', true);
+        return;
+      }
+
+      loadingSpinner.style.display = 'flex';
+      
+      // Simulate processing time for better UX (can be removed in production)
+      setTimeout(() => {
+        try {
+          const output = [...input].map(c => big5ToGb2312Map[c] || c).join('');
+          outputText.value = output;
+          loadingSpinner.style.display = 'none';
+          showStatus('轉換成功！', false);
+        } catch (error) {
+          loadingSpinner.style.display = 'none';
+          showStatus('轉換過程發生錯誤：' + error.message, true);
+          console.error(error);
+        }
+      }, 300);
+    }
+
+    // Copy to clipboard function
+    function copyToClipboard() {
+      const text = outputText.value;
+      if (!text.trim()) {
+        showStatus('沒有可複製的內容', true);
+        return;
+      }
+
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          showStatus('已複製到剪貼簿！', false);
+        })
+        .catch(err => {
+          showStatus('複製失敗：' + err.message, true);
+          console.error(err);
+        });
+    }
+
+    // Clear function
+    function clearContent() {
+      inputText.value = '';
+      outputText.value = '';
+      statusMessage.style.display = 'none';
+      inputText.focus();
+    }
+
+    // Load the conversion map
+    async function loadConversionMap() {
+      try {
+        showStatus('正在載入對照表...', false);
+        const response = await fetch('/gb2312-dict.json');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        big5ToGb2312Map = await response.json();
+        isMapLoaded = true;
+        showStatus('對照表載入成功！', false);
+      } catch (error) {
+        showStatus('載入對照表失敗：' + error.message, true);
+        console.error('載入對照表失敗：', error);
+      }
+    }
+
+    // Event listeners
+    convertBtn.addEventListener('click', convertText);
+    clearBtn.addEventListener('click', clearContent);
+    copyBtn.addEventListener('click', copyToClipboard);
+    
+    // Also convert on input change (after a short delay)
+    let inputTimeout;
+    inputText.addEventListener('input', function() {
+      clearTimeout(inputTimeout);
+      inputTimeout = setTimeout(convertText, 500);
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+      // Ctrl+Enter to convert
+      if (e.ctrlKey && e.key === 'Enter') {
+        convertText();
+      }
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', loadConversionMap);
+  </script>
+</body>
+</html>
