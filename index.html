@@ -5,23 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GB亂碼還原工具</title>
   <style>
-    
+    /* 全局變數 - 淺色主題 */
     :root {
-      --primary-color: #3498db;
-      --secondary-color: #2980b9;
+      --primary-color: #4361ee;
+      --secondary-color: #3a0ca3;
       --success-color: #2ecc71;
-      --background-color: #f9f9f9;
+      --background-color: #f8f9fa;
       --card-background: #ffffff;
       --text-color: #333333;
+      --text-secondary: #666666;
       --border-color: #e0e0e0;
-      --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-      --radius: 8px;
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+      --radius: 12px;
+      --input-bg: #ffffff;
+      --button-shadow: 0 4px 6px rgba(67, 97, 238, 0.15);
+      --theme-switch-bg: #e0e0e0;
+      --theme-switch-circle: #4361ee;
+    }
+
+    /* 深色主題 */
+    [data-theme="dark"] {
+      --primary-color: #4cc9f0;
+      --secondary-color: #4895ef;
+      --success-color: #4ade80;
+      --background-color: #121212;
+      --card-background: #1e1e1e;
+      --text-color: #f1f1f1;
+      --text-secondary: #b0b0b0;
+      --border-color: #333333;
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      --input-bg: #2d2d2d;
+      --button-shadow: 0 4px 6px rgba(76, 201, 240, 0.15);
+      --theme-switch-bg: #3a3a3a;
+      --theme-switch-circle: #f8f9fa;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
     }
 
     body {
@@ -30,66 +53,124 @@
       color: var(--text-color);
       line-height: 1.6;
       padding: 20px;
-      max-width: 1200px;
+      max-width: 900px;
       margin: 0 auto;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      position: relative;
+      min-height: calc(100vh - 40px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .theme-toggle {
+      position: relative;
+      width: 60px;
+      height: 30px;
+      background-color: var(--theme-switch-bg);
+      border-radius: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 0 5px;
+      justify-content: space-between;
+    }
+
+    .theme-toggle .icon {
+      font-size: 16px;
+      z-index: 1;
+      color: var(--text-color);
+    }
+
+    .theme-toggle::after {
+      content: '';
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background-color: var(--theme-switch-circle);
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    [data-theme="dark"] .theme-toggle::after {
+      transform: translateX(30px);
     }
 
     .container {
       background-color: var(--card-background);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 24px;
+      padding: 32px;
       margin-bottom: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
 
     header {
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 32px;
     }
 
     h1 {
       color: var(--primary-color);
-      font-size: 1.8rem;
-      margin-bottom: 8px;
+      font-size: 2rem;
+      margin-bottom: 12px;
+      font-weight: 700;
     }
 
     .description {
-      color: #666;
-      margin-bottom: 16px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      font-size: 1.1rem;
     }
 
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
 
     label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       font-weight: 600;
       color: var(--text-color);
+      font-size: 1.05rem;
     }
 
     textarea {
       width: 100%;
-      height: 120px;
-      padding: 12px;
+      height: 140px;
+      padding: 16px;
       border: 1px solid var(--border-color);
       border-radius: var(--radius);
       font-family: inherit;
       font-size: 1rem;
       resize: vertical;
-      transition: border-color 0.3s, box-shadow 0.3s;
+      transition: all 0.3s;
+      background-color: var(--input-bg);
+      color: var(--text-color);
     }
 
     textarea:focus {
       outline: none;
       border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
     }
 
     .button-group {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       margin: 16px 0;
     }
 
@@ -97,17 +178,50 @@
       background-color: var(--primary-color);
       color: white;
       border: none;
-      padding: 10px 16px;
+      padding: 12px 20px;
       border-radius: var(--radius);
       cursor: pointer;
       font-weight: 600;
-      transition: background-color 0.3s;
+      transition: all 0.3s;
       flex: 1;
       max-width: 200px;
+      box-shadow: var(--button-shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.5);
+      opacity: 0;
+      border-radius: 100%;
+      transform: scale(1, 1) translate(-50%);
+      transform-origin: 50% 50%;
     }
 
     button:hover {
       background-color: var(--secondary-color);
+      transform: translateY(-2px);
+    }
+
+    button:active::after {
+      animation: ripple 0.6s ease-out;
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+      }
+      100% {
+        transform: scale(100, 100);
+        opacity: 0;
+      }
     }
 
     .copy-btn {
@@ -128,6 +242,14 @@
 
     .output-container {
       position: relative;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .output-container textarea {
+      flex: 1;
+      min-height: 140px;
     }
 
     .loading {
@@ -137,37 +259,62 @@
     }
 
     .loading-spinner {
-      border: 4px solid rgba(0, 0, 0, 0.1);
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      border-top: 4px solid var(--primary-color);
-      width: 30px;
-      height: 30px;
+      background: conic-gradient(transparent, transparent, transparent, var(--primary-color));
+      -webkit-mask: radial-gradient(circle at center, transparent 55%, black 55%);
+      mask: radial-gradient(circle at center, transparent 55%, black 55%);
       animation: spin 1s linear infinite;
     }
 
     .status-message {
       text-align: center;
-      padding: 10px;
+      padding: 12px;
       border-radius: var(--radius);
-      margin-top: 10px;
+      margin-top: 16px;
       display: none;
+      font-weight: 500;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .success {
-      background-color: rgba(46, 204, 113, 0.2);
-      color: #27ae60;
+      background-color: rgba(46, 204, 113, 0.15);
+      color: var(--success-color);
     }
 
     .error {
-      background-color: rgba(231, 76, 60, 0.2);
-      color: #c0392b;
+      background-color: rgba(231, 76, 60, 0.15);
+      color: #e74c3c;
     }
 
     footer {
       text-align: center;
       margin-top: 30px;
-      color: #888;
+      padding: 20px 0;
+      color: var(--text-secondary);
       font-size: 0.9rem;
+    }
+
+    footer a {
+      color: var(--primary-color);
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
     }
 
     @keyframes spin {
@@ -178,15 +325,15 @@
     /* Responsive design */
     @media (max-width: 768px) {
       body {
-        padding: 12px;
-      }
-
-      .container {
         padding: 16px;
       }
 
+      .container {
+        padding: 24px;
+      }
+
       h1 {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
       }
 
       .button-group {
@@ -196,56 +343,93 @@
       button {
         max-width: 100%;
       }
+      
+      .theme-toggle {
+        width: 50px;
+        height: 26px;
+      }
+      
+      .theme-toggle::after {
+        width: 20px;
+        height: 20px;
+      }
+      
+      [data-theme="dark"] .theme-toggle::after {
+        transform: translateX(24px);
+      }
     }
 
     @media (max-width: 480px) {
-      textarea {
-        height: 100px;
-      }
-
       .container {
+        padding: 16px;
+      }
+      
+      header {
+        margin-bottom: 20px;
+      }
+      
+      .description {
+        font-size: 0.95rem;
+      }
+      
+      textarea {
         padding: 12px;
+      }
+      
+      .header-container {
+        flex-direction: column;
+        align-items: flex-end;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>亂碼還原工具（GB2312 ➜ Big5）</h1>
-      <p class="description">將顯示為亂碼的 Big5 編碼文字還原成簡體中文</p>
-    </header>
-
-    <main>
-      <div class="form-group">
-        <label for="inputText">輸入亂碼文字：</label>
-        <textarea id="inputText" placeholder="例如：觴鎢蛌遙馱撿"></textarea>
+  <div class="app-container">
+    <div class="header-container">
+      <div></div> <!-- Spacer for alignment -->
+      <div class="theme-toggle" id="themeToggle" aria-label="切換主題">
+        <span class="icon">☀️</span>
+        <span class="icon">🌙</span>
       </div>
+    </div>
+    
+    <div class="container">
+      <header>
+        <h1>亂碼還原工具</h1>
+        <p class="description">將顯示為亂碼的 Big5 編碼文字還原成簡體中文</p>
+      </header>
 
-      <div class="button-group">
-        <button id="convertBtn" type="button">立即轉換</button>
-        <button id="clearBtn" type="button" class="clear-btn">清除內容</button>
-      </div>
-
-      <div class="loading" id="loadingSpinner">
-        <div class="loading-spinner"></div>
-      </div>
-
-      <div class="status-message" id="statusMessage"></div>
-
-      <div class="form-group output-container">
-        <label for="outputText">還原結果：</label>
-        <textarea id="outputText" readonly></textarea>
-        <div class="button-group">
-          <button id="copyBtn" type="button" class="copy-btn">複製結果</button>
+      <main>
+        <div class="form-group">
+          <label for="inputText">輸入亂碼文字：</label>
+          <textarea id="inputText" placeholder="例如：觴鎢蛌遙馱撿"></textarea>
         </div>
-      </div>
-    </main>
-  </div>
 
-  <footer>
-    <p>© 2025 6ra1n0y．<a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GNU GPL-3.0 授權</a> | 將 Big5 編碼的亂碼轉換為正確的簡體中文</p>
-  </footer>
+        <div class="button-group">
+          <button id="convertBtn" type="button">立即轉換</button>
+          <button id="clearBtn" type="button" class="clear-btn">清除內容</button>
+        </div>
+
+        <div class="loading" id="loadingSpinner">
+          <div class="loading-spinner"></div>
+        </div>
+
+        <div class="status-message" id="statusMessage"></div>
+
+        <div class="form-group output-container">
+          <label for="outputText">還原結果：</label>
+          <textarea id="outputText" readonly></textarea>
+          <div class="button-group">
+            <button id="copyBtn" type="button" class="copy-btn">複製結果</button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <footer>
+      <p>© 2025 6ra1n0y．<a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GNU GPL-3.0 授權</a> | 將 Big5 編碼的亂碼轉換為正確的簡體中文</p>
+    </footer>
+  </div>
 
   <script>
     // DOM elements
@@ -256,24 +440,58 @@
     const copyBtn = document.getElementById('copyBtn');
     const loadingSpinner = document.getElementById('loadingSpinner');
     const statusMessage = document.getElementById('statusMessage');
-
+    const themeToggle = document.getElementById('themeToggle');
+    
     // Global variables
     let big5ToGb2312Map = {};
     let isMapLoaded = false;
 
-    // Show status message
+    // Theme handling
+    function setTheme(isDark) {
+      document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    }
+
+    // Initialize theme
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      
+      if (savedTheme) {
+        setTheme(savedTheme === 'dark');
+      } else {
+        setTheme(prefersDark);
+      }
+
+      // Theme toggle event listener
+      themeToggle.addEventListener('click', function() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        setTheme(currentTheme !== 'dark');
+      });
+    }
+
+    // Show status message with animation
     function showStatus(message, isError = false) {
       statusMessage.textContent = message;
       statusMessage.className = 'status-message ' + (isError ? 'error' : 'success');
       statusMessage.style.display = 'block';
       
+      // Reset animation
+      statusMessage.style.animation = 'none';
+      statusMessage.offsetHeight; // Trigger reflow
+      statusMessage.style.animation = 'fadeIn 0.3s ease-in-out';
+      
       // Auto hide after 3 seconds
       setTimeout(() => {
-        statusMessage.style.display = 'none';
+        statusMessage.style.opacity = '0';
+        setTimeout(() => {
+          statusMessage.style.display = 'none';
+          statusMessage.style.opacity = '1';
+        }, 300);
       }, 3000);
     }
 
-    // Convert function
+    // Convert function with animation
     function convertText() {
       if (!isMapLoaded) {
         showStatus('正在載入對照表，請稍候...', false);
@@ -288,13 +506,35 @@
 
       loadingSpinner.style.display = 'flex';
       
-      // Simulate processing time for better UX (can be removed in production)
+      // Process with tiny delay for animation
       setTimeout(() => {
         try {
           const output = [...input].map(c => big5ToGb2312Map[c] || c).join('');
-          outputText.value = output;
-          loadingSpinner.style.display = 'none';
-          showStatus('轉換成功！', false);
+          
+          // Animate the output appearance
+          outputText.value = '';
+          let i = 0;
+          const typeSpeed = Math.min(50, 1000 / output.length); // Dynamic typing speed based on length
+          
+          const typeWriter = () => {
+            if (i < output.length) {
+              outputText.value += output.charAt(i);
+              i++;
+              setTimeout(typeWriter, typeSpeed);
+            } else {
+              loadingSpinner.style.display = 'none';
+              showStatus('轉換成功！', false);
+            }
+          };
+          
+          if (output.length > 100) {
+            // Skip animation for long outputs
+            outputText.value = output;
+            loadingSpinner.style.display = 'none';
+            showStatus('轉換成功！', false);
+          } else {
+            typeWriter();
+          }
         } catch (error) {
           loadingSpinner.style.display = 'none';
           showStatus('轉換過程發生錯誤：' + error.message, true);
@@ -311,9 +551,18 @@
         return;
       }
 
+      // Highlight effect
+      outputText.select();
+      
       navigator.clipboard.writeText(text)
         .then(() => {
           showStatus('已複製到剪貼簿！', false);
+          
+          // Show ripple effect on button
+          copyBtn.classList.add('clicked');
+          setTimeout(() => {
+            copyBtn.classList.remove('clicked');
+          }, 600);
         })
         .catch(err => {
           showStatus('複製失敗：' + err.message, true);
@@ -321,12 +570,23 @@
         });
     }
 
-    // Clear function
+    // Clear function with animation
     function clearContent() {
-      inputText.value = '';
-      outputText.value = '';
-      statusMessage.style.display = 'none';
-      inputText.focus();
+      // Fade out animation
+      inputText.style.opacity = '0';
+      outputText.style.opacity = '0';
+      
+      setTimeout(() => {
+        inputText.value = '';
+        outputText.value = '';
+        
+        // Fade in animation
+        inputText.style.opacity = '1';
+        outputText.style.opacity = '1';
+        
+        statusMessage.style.display = 'none';
+        inputText.focus();
+      }, 200);
     }
 
     // Load the conversion map
@@ -346,6 +606,41 @@
       }
     }
 
+    // Add ripple effect to buttons
+    document.querySelectorAll('button').forEach(button => {
+      button.addEventListener('click', function(e) {
+        const rect = button.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const ripple = document.createElement('span');
+        ripple.style.position = 'absolute';
+        ripple.style.top = `${y}px`;
+        ripple.style.left = `${x}px`;
+        ripple.style.transform = 'translate(-50%, -50%)';
+        ripple.style.width = '0';
+        ripple.style.height = '0';
+        ripple.style.borderRadius = '50%';
+        ripple.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+        ripple.style.pointerEvents = 'none';
+        
+        button.appendChild(ripple);
+        
+        ripple.animate(
+          [
+            { opacity: 1, width: '0', height: '0' },
+            { opacity: 0, width: '500px', height: '500px' }
+          ],
+          {
+            duration: 600,
+            easing: 'ease-out'
+          }
+        ).onfinish = () => {
+          ripple.remove();
+        };
+      });
+    });
+
     // Event listeners
     convertBtn.addEventListener('click', convertText);
     clearBtn.addEventListener('click', clearContent);
@@ -364,10 +659,25 @@
       if (e.ctrlKey && e.key === 'Enter') {
         convertText();
       }
+      
+      // Escape to clear
+      if (e.key === 'Escape') {
+        clearContent();
+      }
     });
 
     // Initialize
-    document.addEventListener('DOMContentLoaded', loadConversionMap);
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      loadConversionMap();
+      inputText.focus();
+    });
+
+    // In production, add error handling and retry logic
+    window.addEventListener('error', function(e) {
+      console.error('Application error:', e.error);
+      showStatus('應用程式發生錯誤，請重新整理頁面', true);
+    });
   </script>
 </body>
 </html>
