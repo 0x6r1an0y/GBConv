@@ -14,7 +14,7 @@
 
 ## 前端
 
-網頁無須後端，但是javascript 的 `fetch()` 需要開server，可以用 `python -m http.server 8000` 在自己的電腦上的 `127.0.0.1:8000` 上瀏覽。字典是不會變動的，也可以在此抓取 `https://raw.githubusercontent.com/6ra1n0y/GBConv/refs/heads/main/gb2312-dict.json`
+網頁無須後端，但是javascript 的 `fetch()` 需要開server，可以用 `python -m http.server 8000` 在自己的電腦上的 `127.0.0.1:8000` 上瀏覽。字典是不會變動的，也可以在此抓取 `https://raw.githubusercontent.com/0x6r1an0y/GBConv/refs/heads/main/gb2312-dict.json`
 
 ## 注意事項
 
